@@ -1,0 +1,4 @@
+project_id = "cknlxuespsymlvtwkeqh"
+
+[functions.verify-business]
+verify_jwt = false
