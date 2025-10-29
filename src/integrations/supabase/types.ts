@@ -14,7 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      business_verifications: {
+        Row: {
+          business_name: string
+          created_at: string | null
+          external_user_id: string
+          failure_reason: string | null
+          id: string
+          meets_requirements: boolean
+          total_transactions: number
+          unique_wallets: number
+          updated_at: string | null
+          verification_status: Database["public"]["Enums"]["verification_status"]
+          wallet_address: string
+        }
+        Insert: {
+          business_name: string
+          created_at?: string | null
+          external_user_id: string
+          failure_reason?: string | null
+          id?: string
+          meets_requirements: boolean
+          total_transactions: number
+          unique_wallets: number
+          updated_at?: string | null
+          verification_status: Database["public"]["Enums"]["verification_status"]
+          wallet_address: string
+        }
+        Update: {
+          business_name?: string
+          created_at?: string | null
+          external_user_id?: string
+          failure_reason?: string | null
+          id?: string
+          meets_requirements?: boolean
+          total_transactions?: number
+          unique_wallets?: number
+          updated_at?: string | null
+          verification_status?: Database["public"]["Enums"]["verification_status"]
+          wallet_address?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +64,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      verification_status: "approved" | "rejected" | "under_review"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +191,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      verification_status: ["approved", "rejected", "under_review"],
+    },
   },
 } as const

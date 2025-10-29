@@ -3,9 +3,15 @@ import { VerificationForm } from "@/components/VerificationForm";
 import { VerificationResults } from "@/components/VerificationResults";
 
 interface VerificationData {
+  verificationId: string;
+  walletAddress: string;
+  businessName: string;
   totalTransactions: number;
   uniqueWallets: number;
-  walletAddress: string;
+  meetsRequirements: boolean;
+  failureReason: string | null;
+  verificationStatus: string;
+  verifiedAt: string;
 }
 
 const Index = () => {

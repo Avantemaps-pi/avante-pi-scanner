@@ -7,9 +7,15 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 
 interface VerificationResult {
+  verificationId: string;
+  walletAddress: string;
+  businessName: string;
   totalTransactions: number;
   uniqueWallets: number;
-  walletAddress: string;
+  meetsRequirements: boolean;
+  failureReason: string | null;
+  verificationStatus: string;
+  verifiedAt: string;
 }
 
 interface VerificationFormProps {
@@ -18,6 +24,7 @@ interface VerificationFormProps {
 
 export const VerificationForm = ({ onVerificationComplete }: VerificationFormProps) => {
   const [walletAddress, setWalletAddress] = useState("");
+  const [businessName, setBusinessName] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
 
   const handleVerify = async () => {
@@ -26,18 +33,34 @@ export const VerificationForm = ({ onVerificationComplete }: VerificationFormPro
       return;
     }
 
+    if (!businessName.trim()) {
+      toast.error("Please enter a business name");
+      return;
+    }
+
     setIsVerifying(true);
     onVerificationComplete(null);
 
     try {
+      // For demo purposes, use a test external user ID
+      const testExternalUserId = `demo_user_${Date.now()}`;
+      
       const { data, error } = await supabase.functions.invoke('verify-business', {
-        body: { walletAddress: walletAddress.trim() }
+        body: { 
+          walletAddress: walletAddress.trim(),
+          businessName: businessName.trim(),
+          externalUserId: testExternalUserId
+        }
       });
 
       if (error) throw error;
 
       if (data.success && data.data) {
-        toast.success("Business verified successfully");
+        if (data.data.meetsRequirements) {
+          toast.success("Business verified successfully - Approved");
+        } else {
+          toast.error(`Verification failed: ${data.data.failureReason}`);
+        }
         onVerificationComplete(data.data);
       } else {
         toast.error(data.error || "Verification failed");
@@ -63,6 +86,21 @@ export const VerificationForm = ({ onVerificationComplete }: VerificationFormPro
       </div>
 
       <div className="space-y-4">
+        <div className="space-y-2">
+          <label htmlFor="businessName" className="text-sm font-medium text-foreground">
+            Business Name
+          </label>
+          <Input
+            id="businessName"
+            type="text"
+            placeholder="Acme Corporation"
+            value={businessName}
+            onChange={(e) => setBusinessName(e.target.value)}
+            className="h-12 bg-background/50 border-border/50 focus:border-primary transition-colors"
+            disabled={isVerifying}
+          />
+        </div>
+
         <div className="space-y-2">
           <label htmlFor="wallet" className="text-sm font-medium text-foreground">
             Pi Wallet Address
